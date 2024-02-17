@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crypto Data{% endblock %}
+
+{% block body %}
+<style>
+    .crypto-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .crypto-table th, .crypto-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .crypto-table th {
+        background-color: #f2f2f2;
+    }
+
+    .crypto-table td {
+        background-color: #fff;
+    }
+
+    .crypto-table tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .crypto-table tbody td {
+        font-weight: bold;
+    }
+
+    .crypto-table tbody td.price {
+        color: green;
+    }
+
+    .crypto-table tbody td.change {
+        color: blue;
+    }
+</style>
+
+<div class="example-wrapper">
+    <h1>Crypto Data</h1>
+
+    {% if data is defined %}
+        <p>Total Coins: {{ data.stats.totalCoins }}</p>
+        <p>Total Market Cap: {{ data.stats.totalMarketCap }}</p>
+        <p>Total 24h Volume: {{ data.stats.total24hVolume }}</p>
+
+        <table class="crypto-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>24h Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coin in data.coins %}
+                    <tr>
+                        <td>{{ coin.rank }}</td>
+                        <td>{{ coin.name }}</td>
+                        <td>{{ coin.symbol }}</td>
+                        <td class="price">{{ coin.price }}</td>
+                        <td class="change">{{ coin.change }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No data available.</p>
+    {% endif %}
+</div>
+{% endblock %}

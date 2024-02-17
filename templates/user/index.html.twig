@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>User index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>firstName</th>
+                <th>LastName</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Total Balance</th> <!-- Ajout de la colonne pour Total Balance -->
+                <th>Crypto Balance</th> <!-- Ajout de la colonne pour Crypto Balance -->
+                <th>Usable Balance</th> <!-- Ajout de la colonne pour Usable Balance -->
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.firstName }}</td>
+                <td>{{ user.LastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                {% if user.Haswallet is not null %}
+                    <td>{{ user.Haswallet.totalBalance }}</td> <!-- Afficher Total Balance -->
+                    <td>{{ user.Haswallet.cryptoBalance }}</td> <!-- Afficher Crypto Balance -->
+                    <td>{{ user.Haswallet.usuableBalance }}</td> <!-- Afficher Usable Balance -->
+                {% else %}
+                    <td colspan="3">No wallet data</td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_new') }}">Create new</a>
+{% endblock %}
