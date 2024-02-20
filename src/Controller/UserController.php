@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Form\UserType;
+use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,10 +18,22 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
-    {
+    public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
+    {   
+
+        /**
+         * @gerer la pagination  de l'affichage des utilisateurs.
+         */
+
+        $user = $paginator->paginate(
+            $userRepository->findAll(),
+            $request->query->getInt('page', 1),
+            1
+        );
+
+        /***** Afficher le formulaire pour ajouter un nouvel utilisateur ****/
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $user
         ]);
     }
 

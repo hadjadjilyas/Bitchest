@@ -1,32 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}Bitchest | Users{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
+<div class="container">
+{% if not users.items is same as([]) %}
+    <h3 class="mt-4"> Users</h3>
 
-    <table class="table">
-        <thead>
+    <div class="count mt-4">
+          <h5 class="text-primary"> you currently have {{ users.getTotalItemCount }} users !</h5>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="thead-dark">
             <tr>
                 <th>Id</th>
                 <th>firstName</th>
                 <th>LastName</th>
                 <th>Email</th>
-                <th>Roles</th>
-                <th>Total Balance</th> <!-- Ajout de la colonne pour Total Balance -->
-                <th>Crypto Balance</th> <!-- Ajout de la colonne pour Crypto Balance -->
-                <th>Usable Balance</th> <!-- Ajout de la colonne pour Usable Balance -->
+                {# <th>Roles</th> #}
+                <th>Total Balance</th>
+                <th>Crypto Balance</th>
+                <th>Usable Balance</th>
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
+
+        {# /*  Affichage des utilisateurs */ #}
         {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
+            <tr class="table-primary">
+                <th scope="row">{{user.id}}</th>
+                {# <td>{{ user.id }}</td> #}
                 <td>{{ user.firstName }}</td>
                 <td>{{ user.LastName }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                {# <td>{{ user.roles ? user.roles|json_encode : '' }}</td> #}
                 {% if user.Haswallet is not null %}
                     <td>{{ user.Haswallet.totalBalance }}</td> <!-- Afficher Total Balance -->
                     <td>{{ user.Haswallet.cryptoBalance }}</td> <!-- Afficher Crypto Balance -->
@@ -35,17 +44,27 @@
                     <td colspan="3">No wallet data</td>
                 {% endif %}
                 <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="text-primary text-decoration-none">show</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}"  class="text-danger text-decoration-none">edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="6">no records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+    <a href="{{ path('app_user_new') }}" class="btn btn-primary mt-4">Create new</a>
+   <div class="navigation mt-4 d-flex justify-content-center">
+           {{ knp_pagination_render(users) }}
+    </div>
+    {% else %}
+     <div class="count mt-4">
+          <h5 class="text-primary"> you currently have {{ users.getTotalItemCount }} users !</h5>
+    </div>
+     <a href="{{ path('app_user_new') }}" class="btn btn-primary mt-4">Create new</a>
+   {% endif %}
+</div>
 {% endblock %}

@@ -42,15 +42,16 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Crypto Data</h1>
+<div class="container">
+    <h3 class="mt-4">Crypto Data</h3>
 
     {% if data is defined %}
-        <p>Total Coins: {{ data.stats.totalCoins }}</p>
-        <p>Total Market Cap: {{ data.stats.totalMarketCap }}</p>
-        <p>Total 24h Volume: {{ data.stats.total24hVolume }}</p>
+        <p class="text-danger">Total Coins: {{ data.stats.totalCoins }}</p>
+        <p class="text-info">Total Market Cap: {{ data.stats.totalMarketCap }}</p>
+        <p class="text-warning">Total 24h Volume: {{ data.stats.total24hVolume }}</p>
 
-        <table class="crypto-table">
-            <thead>
+        <table class="crypto-table table table-hover">
+            <thead class="thead-dark">
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
@@ -61,7 +62,7 @@
             </thead>
             <tbody>
                 {% for coin in data.coins %}
-                    <tr>
+                    <tr class="table-primary">
                         <td>{{ coin.rank }}</td>
                         <td>{{ coin.name }}</td>
                         <td>{{ coin.symbol }}</td>
@@ -74,5 +75,6 @@
     {% else %}
         <p>No data available.</p>
     {% endif %}
+</div>
 </div>
 {% endblock %}
