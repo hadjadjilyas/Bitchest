@@ -22,9 +22,41 @@
         </tbody>
     </table>
 
+    <h2>Owned Cryptos</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crypto in user.getOwnedCryptos() %}
+                <tr>
+                    <td>{{ crypto.getName() }}</td>
+                    <td>{{ crypto.getSymbol() }}</td>
+                    <td>{{ crypto.getPrice() }}</td>
+                    <td>
+                        {% set totalQuantity = 0 %}
+                        {% for transaction in crypto.getTransactions() %}
+                            {% if transaction.getUser() == user %}
+                                {% if transaction.getTransactionType() == 'buy' %}
+                                    {% set totalQuantity = totalQuantity + transaction.getQuantity() %}
+                                {% elseif transaction.getTransactionType() == 'sell' %}
+                                    {% set totalQuantity = totalQuantity - transaction.getQuantity() %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ totalQuantity }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <a href="{{ path('app_user_index') }}">back to list</a>
-
     <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
     {{ include('user/_delete_form.html.twig') }}
 {% endblock %}

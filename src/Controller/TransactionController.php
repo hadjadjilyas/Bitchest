@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
+use App\Entity\Crypto;
 use App\Form\TransactionType;
 use App\Repository\TransactionRepository;
+use App\Repository\CryptoRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +26,7 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, CryptoRepository $cryptoRepository): Response
     {
         $transaction = new Transaction();
         $form = $this->createForm(TransactionType::class, $transaction);
@@ -31,7 +34,6 @@ class TransactionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $transactionType = $transaction->getTransactionType();
-
             $user = $transaction->getUser();
 
             // Check if the user has a wallet
@@ -56,12 +58,15 @@ class TransactionController extends AbstractController
                 }
 
                 $wallet->setUsuableBalance($wallet->getUsuableBalance() - $transaction->getTransactionAmount());
+                $wallet->setCryptoBalance($wallet->getCryptoBalance() + $transaction->getTransactionAmount());
+
+                // Update the user's ownedCryptos collection
+                $crypto = $cryptoRepository->find($transaction->getCrypto());
+                $user->addOwnedCrypto($crypto);
+
             } elseif ($transactionType === 'sell') {
                 // Sell logic
-                // Implement your specific logic for sell transactions here
-
-                // For example, check if the user has enough cryptocurrency to sell
-                if ($transaction->getQuantity() > $wallet->getCryptoBalance()) {
+                if ($transaction->getTransactionAmount() > $wallet->getCryptoBalance()) {
                     return $this->render('transaction/new.html.twig', [
                         'transaction' => $transaction,
                         'form' => $form,
@@ -69,9 +74,12 @@ class TransactionController extends AbstractController
                     ]);
                 }
 
-                // Update wallet balances accordingly for a sell transaction
-                $wallet->setCryptoBalance($wallet->getCryptoBalance() - $transaction->getQuantity());
+                $wallet->setCryptoBalance($wallet->getCryptoBalance() - $transaction->getTransactionAmount());
                 $wallet->setUsuableBalance($wallet->getUsuableBalance() + $transaction->getTransactionAmount());
+
+                // Update the user's ownedCryptos collection
+                $crypto = $cryptoRepository->find($transaction->getCrypto());
+               // $user->removeOwnedCrypto($crypto);
             }
 
             $entityManager->persist($transaction);
@@ -85,7 +93,7 @@ class TransactionController extends AbstractController
             'form' => $form,
         ]);
     }
-
+    
     #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
     public function show(Transaction $transaction): Response
     {

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -37,6 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Wallet $hasWallet = null;
+
+    #[ORM\ManyToMany(targetEntity: Crypto::class, inversedBy: 'users')]
+    private Collection $ownedCryptos;
+
+    public function __construct()
+    {
+        $this->ownedCryptos = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -143,4 +153,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Crypto>
+     */
+    public function getOwnedCryptos(): Collection
+    {
+        return $this->ownedCryptos;
+    }
+
+    public function addOwnedCrypto(Crypto $ownedCrypto): static
+    {
+        if (!$this->ownedCryptos->contains($ownedCrypto)) {
+            $this->ownedCryptos->add($ownedCrypto);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedCrypto(Crypto $ownedCrypto): static
+    {
+        $this->ownedCryptos->removeElement($ownedCrypto);
+
+        return $this;
+    }
+    
 }
