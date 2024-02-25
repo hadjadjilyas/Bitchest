@@ -19,10 +19,29 @@ class UserController extends AbstractController
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+
+        // Assurez-vous qu'un utilisateur est connecté
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+        }
+
+        // Récupérer le rôle de l'utilisateur
+        $roles = $user->getRoles();
+
+        // Si l'utilisateur a le rôle ADMIN, récupérez tous les utilisateurs
+        if (in_array('ROLE_ADMIN', $roles)) {
+            $users = $userRepository->findAll();
+        } else {
+            // Sinon, récupérez l'utilisateur connecté
+            $users = [$user];
+        }
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $users,
         ]);
-    }
+    }   
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response

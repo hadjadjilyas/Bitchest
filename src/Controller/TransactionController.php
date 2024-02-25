@@ -20,11 +20,29 @@ class TransactionController extends AbstractController
     #[Route('/', name: 'app_transaction_index', methods: ['GET'])]
     public function index(TransactionRepository $transactionRepository): Response
     {
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+
+        // Assurez-vous qu'un utilisateur est connecté
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+        }
+
+        // Récupérer le rôle de l'utilisateur
+        $roles = $user->getRoles();
+
+        // Si l'utilisateur a le rôle ADMIN, récupérez toutes les transactions
+        if (in_array('ROLE_ADMIN', $roles)) {
+            $transactions = $transactionRepository->findAll();
+        } else {
+            // Sinon, récupérez les transactions liées à l'utilisateur connecté
+            $transactions = $transactionRepository->findBy(['user' => $user]);
+        }
+
         return $this->render('transaction/index.html.twig', [
-            'transactions' => $transactionRepository->findAll(),
+            'transactions' => $transactions,
         ]);
     }
-
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, CryptoRepository $cryptoRepository): Response
     {

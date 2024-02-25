@@ -13,9 +13,9 @@
                 <th>LastName</th>
                 <th>Email</th>
                 <th>Roles</th>
-                <th>Total Balance</th> <!-- Ajout de la colonne pour Total Balance -->
-                <th>Crypto Balance</th> <!-- Ajout de la colonne pour Crypto Balance -->
-                <th>Usable Balance</th> <!-- Ajout de la colonne pour Usable Balance -->
+                <th>Total Balance</th>
+                <th>Crypto Balance</th>
+                <th>Usable Balance</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -28,9 +28,9 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
                 {% if user.Haswallet is not null %}
-                    <td>{{ user.Haswallet.totalBalance }}</td> <!-- Afficher Total Balance -->
-                    <td>{{ user.Haswallet.cryptoBalance }}</td> <!-- Afficher Crypto Balance -->
-                    <td>{{ user.Haswallet.usuableBalance }}</td> <!-- Afficher Usable Balance -->
+                    <td>{{ user.Haswallet.totalBalance }}</td>
+                    <td>{{ user.Haswallet.cryptoBalance }}</td>
+                    <td>{{ user.Haswallet.usuableBalance }}</td>
                 {% else %}
                     <td colspan="3">No wallet data</td>
                 {% endif %}
@@ -47,5 +47,7 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_user_new') }}">Create new</a>
+    {% endif %}
 {% endblock %}
