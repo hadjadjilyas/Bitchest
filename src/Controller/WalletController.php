@@ -16,11 +16,34 @@ class WalletController extends AbstractController
 {
     #[Route('/', name: 'app_wallet_index', methods: ['GET'])]
     public function index(WalletRepository $walletRepository): Response
-    {
-        return $this->render('wallet/index.html.twig', [
-            'wallets' => $walletRepository->findAll(),
-        ]);
+{
+    // Récupérer l'utilisateur connecté
+    $user = $this->getUser();
+
+    // Assurez-vous qu'un utilisateur est connecté
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
     }
+
+    // Si l'utilisateur a le rôle ADMIN, récupérez tous les portefeuilles
+    if (in_array('ROLE_ADMIN', $user->getRoles())) {
+        $wallets = $walletRepository->findAll();
+    } else {
+        // Sinon, récupérez le portefeuille lié à l'utilisateur connecté
+        $wallet = $user->getHasWallet();
+
+        // Vérifiez si l'utilisateur a un portefeuille
+        if (!$wallet) {
+            throw $this->createNotFoundException('Cet utilisateur n\'a pas de portefeuille.');
+        }
+
+        $wallets = [$wallet]; // Mettez le portefeuille dans un tableau pour que le rendu soit cohérent avec le code précédent
+    }
+
+    return $this->render('wallet/index.html.twig', [
+        'wallets' => $wallets,
+    ]);
+}
 
     #[Route('/new', name: 'app_wallet_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

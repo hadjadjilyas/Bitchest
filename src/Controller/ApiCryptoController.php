@@ -45,16 +45,35 @@ class ApiCryptoController extends AbstractController
 
             // Check if the status is 'success'
             if ($data['status'] === 'success') {
-                // Loop through the cryptocurrency data and persist it to the database
-                foreach ($data['data']['coins'] as $coinData) {
-                    $crypto = new Crypto();
-                    $crypto->setName($coinData['name']);
-                    $crypto->setSymbol($coinData['symbol']);
-                    $crypto->setPrice($coinData['price']);
-                    $crypto->setCours($coinData['cours'] ?? null);
+                // Create an array to store processed symbols
+                $processedSymbols = [];
 
-                    // Persist the object to the database
-                    $entityManager->persist($crypto);
+                // Loop through the cryptocurrency data and persist/update it in the database
+                foreach ($data['data']['coins'] as $coinData) {
+                    // Check if the symbol has already been processed
+                    if (in_array($coinData['symbol'], $processedSymbols)) {
+                        continue; // Skip to the next iteration if already processed
+                    }
+
+                    // Add the symbol to the list of processed symbols
+                    $processedSymbols[] = $coinData['symbol'];
+
+                    $existingCrypto = $entityManager->getRepository(Crypto::class)->findOneBy(['Symbol' => $coinData['symbol']]);
+
+                    if (!$existingCrypto) {
+                        // If the crypto does not exist, create a new Crypto object and persist it
+                        $crypto = new Crypto();
+                        $crypto->setName($coinData['name']);
+                        $crypto->setSymbol($coinData['symbol']);
+                        $crypto->setPrice($coinData['price']);
+                        $crypto->setCours($coinData['cours'] ?? null);
+
+                        $entityManager->persist($crypto);
+                    } else {
+                        // If the crypto exists, update the price (and other properties if necessary)
+                        $existingCrypto->setPrice($coinData['price']);
+                        // You can also update other properties if needed
+                    }
                 }
 
                 // Flush changes to the database

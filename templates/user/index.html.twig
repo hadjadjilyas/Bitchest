@@ -37,9 +37,9 @@
                 <td>{{ user.email }}</td>
                 {# <td>{{ user.roles ? user.roles|json_encode : '' }}</td> #}
                 {% if user.Haswallet is not null %}
-                    <td>{{ user.Haswallet.totalBalance }}</td> <!-- Afficher Total Balance -->
-                    <td>{{ user.Haswallet.cryptoBalance }}</td> <!-- Afficher Crypto Balance -->
-                    <td>{{ user.Haswallet.usuableBalance }}</td> <!-- Afficher Usable Balance -->
+                    <td>{{ user.Haswallet.totalBalance }}</td>
+                    <td>{{ user.Haswallet.cryptoBalance }}</td>
+                    <td>{{ user.Haswallet.usuableBalance }}</td>
                 {% else %}
                     <td colspan="3">No wallet data</td>
                 {% endif %}

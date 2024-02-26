@@ -30,9 +30,13 @@ class Crypto
     #[ORM\OneToMany(mappedBy: 'crypto', targetEntity: Transaction::class)]
     private Collection $transactions;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'ownedCryptos')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,6 +117,33 @@ class Crypto
             if ($transaction->getCrypto() === $this) {
                 $transaction->setCrypto(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addOwnedCrypto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeOwnedCrypto($this);
         }
 
         return $this;
