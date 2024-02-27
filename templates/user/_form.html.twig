@@ -1,4 +1,13 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <button type="submit" class="btn btn-success mt-4" style="background-color: #28a745; /* Green */
+                                                            border: none;
+                                                            color: white;
+                                                            padding: 10px 20px;
+                                                            text-align: center;
+                                                            text-decoration: none;
+                                                            display: inline-block;
+                                                            font-size: 16px;
+                                                            margin: 4px 2px;
+                                                            cursor: pointer;">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

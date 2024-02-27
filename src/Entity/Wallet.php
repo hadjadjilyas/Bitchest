@@ -22,9 +22,12 @@ class Wallet
     #[ORM\Column]
     private ?float $usuableBalance = 500.0;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'hasWallet')]
+    private ?User $user = null;
+
     public function __construct()
     {
-        // Initialiser les propriétés dans le constructeur si nécessaire
+        // Initialize properties in the constructor if necessary
         $this->totalBalance = $this->calculateTotalBalance();
     }
 
@@ -71,10 +74,21 @@ class Wallet
 
         return $this;
     }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
     private function calculateTotalBalance(): float
     {
         return $this->cryptoBalance + $this->usuableBalance;
     }
-
-    
 }

@@ -35,12 +35,17 @@ class Transaction
     #[ORM\ManyToOne(inversedBy: 'transactions')]
     private ?Crypto $crypto = null;
 
+
     #[ORM\PrePersist]
     public function prePersist(): void
     {
         if ($this->date_transaction === null) {
             $this->date_transaction = new \DateTimeImmutable();
         }
+    }
+
+    public function __construct(){
+        $this->date_transaction = new \DateTimeImmutable;
     }
 
     public function getId(): ?int

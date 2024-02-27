@@ -17,23 +17,25 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName')
-            ->add('lastName')
-            ->add('email', EmailType::class)
+        ->add('firstName', null, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' => 'mt-4']])
+            ->add('lastName' , null, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' => 'mt-4']])
+            ->add('email', EmailType::class, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' => 'mt-4']])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options' => ['label' => 'Password'],
-                'second_options' => ['label' => 'Repeat Password'],
+                'first_options' => ['label' => 'Password', 'attr' => ['class' => 'form-control'], 'label_attr' => ['class' => 'mt-4']],
+                'second_options' => ['label' => 'Repeat Password', 'attr' => ['class' => 'form-control'], 'label_attr' => ['class' => 'mt-4']],
                 'invalid_message' => 'The password fields must match.',
             ])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'Admin' => 'ROLE_ADMIN',
                 ],
+                'label_attr' => ['class' => 'mt-4'],
                 'multiple' => true,
                 'expanded' => true,
                 'label' => 'Roles',
                 'required' => true,
+                'attr' => ['class' => 'form-control']
             ]);
     }
 

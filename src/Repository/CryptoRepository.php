@@ -21,6 +21,8 @@ class CryptoRepository extends ServiceEntityRepository
         parent::__construct($registry, Crypto::class);
     }
 
+    
+
 //    /**
 //     * @return Crypto[] Returns an array of Crypto objects
 //     */

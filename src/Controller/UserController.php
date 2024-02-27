@@ -91,28 +91,42 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user,UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+    public function edit(Request $request, User $user, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+{
+    // Récupérer l'utilisateur connecté
+    $currentUser = $this->getUser();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            );
-            $entityManager->flush();
+    // Vérifier si l'utilisateur connecté est administrateur
+    $isAdmin = in_array('ROLE_ADMIN', $currentUser->getRoles());
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
+    // Créer le formulaire
+    $form = $this->createForm(UserType::class, $user);
 
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+    // Si l'utilisateur n'est pas administrateur, supprimer le champ 'roles'
+    if (!$isAdmin) {
+        $form->remove('roles');
     }
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $user->setPassword(
+            $userPasswordHasher->hashPassword(
+                $user,
+                $form->get('password')->getData()
+            )
+        );
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    return $this->render('user/edit.html.twig', [
+        'user' => $user,
+        'form' => $form->createView(),
+    ]);
+}
+
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response

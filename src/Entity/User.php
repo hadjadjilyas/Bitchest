@@ -43,6 +43,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Crypto::class, inversedBy: 'users')]
     private Collection $ownedCryptos;
 
+    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user', cascade: ['remove'])]
+    private Collection $transactions;
+
+
     public function __construct()
     {
         $this->ownedCryptos = new ArrayCollection();

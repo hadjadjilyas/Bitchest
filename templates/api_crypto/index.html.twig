@@ -2,77 +2,156 @@
 
 {% block title %}Crypto Data{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            padding-top: 56px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .info-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+
+        .info-text {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .welcome-container {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #28a745;
+            border: 1px solid #218838;
+            border-radius: 5px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .container.table-container {
+            /* Remove the top margin */
+        }
+
+        .table-container .display-4 {
+            margin-top: 20px;
+        }
+
+        .table-container .crypto-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container .crypto-table th, .table-container .crypto-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .table-container .crypto-table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .table-container .crypto-table td {
+            background-color: #f8f9fa;
+        }
+
+        .table-container .crypto-table tbody tr:hover {
+            background-color: #e0e0e0;
+            transition: background-color 0.3s;
+        }
+
+        .table-container .crypto-table tbody td {
+            font-weight: bold;
+        }
+
+        .table-container .crypto-table tbody td.price {
+            color: green;
+        }
+
+        .table-container .crypto-table tbody td.change {
+            color: blue;
+        }
+
+        .btn-buy-sell-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-buy-sell {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 18px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-buy-sell:hover {
+            background-color: #218838;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<style>
-    .crypto-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .crypto-table th, .crypto-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-
-    .crypto-table th {
-        background-color: #f2f2f2;
-    }
-
-    .crypto-table td {
-        background-color: #fff;
-    }
-
-    .crypto-table tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-
-    .crypto-table tbody td {
-        font-weight: bold;
-    }
-
-    .crypto-table tbody td.price {
-        color: green;
-    }
-
-    .crypto-table tbody td.change {
-        color: blue;
-    }
-</style>
-
-<div class="example-wrapper">
-    <h1>Crypto Data</h1>
-
-    {% if data is defined %}
-        <p>Total Coins: {{ data.stats.totalCoins }}</p>
-        <p>Total Market Cap: {{ data.stats.totalMarketCap }}</p>
-        <p>Total 24h Volume: {{ data.stats.total24hVolume }}</p>
-
-        <table class="crypto-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Symbol</th>
-                    <th>Price</th>
-                    <th>24h Change</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for coin in data.coins %}
-                    <tr>
-                        <td>{{ coin.rank }}</td>
-                        <td>{{ coin.name }}</td>
-                        <td>{{ coin.symbol }}</td>
-                        <td class="price">{{ coin.price }}</td>
-                        <td class="change">{{ coin.change }}%</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No data available.</p>
+    {% if app.user %}
+        <div class="welcome-container">
+            <p class="welcome-text">Bienvenue, {{ app.user.firstName }}!</p>
+        </div>
     {% endif %}
-</div>
+   
+    <div class="container table-container">
+        <h1 class="display-4">Crypto Data</h1>
+
+        {% if data is defined %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover crypto-table">
+                    <thead class="thead-custom">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            <th>24h Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for coin in data.coins %}
+                            <tr>
+                                <td>{{ coin.rank }}</td>
+                                <td>{{ coin.name }}</td>
+                                <td>{{ coin.symbol }}</td>
+                                <td class="price">{{ coin.price }}</td>
+                                <td class="change">{{ coin.change }}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No data available.</p>
+        {% endif %}
+
+        <div class="btn-buy-sell-container">
+            <a href="{{ path('app_transaction_new') }}" class="btn btn-buy-sell">Buy or Sell</a>
+        </div>
+    </div>
 {% endblock %}

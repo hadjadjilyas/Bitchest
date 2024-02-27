@@ -2,44 +2,134 @@
 
 {% block title %}Transaction index{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            padding-top: 56px;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #343a40;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            border-bottom: 2px solid #17a2b8;
+            padding-bottom: 10px;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-container th, .table-container td {
+            text-align: center;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .thead-custom {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .table-container tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .actions-btn-group {
+            white-space: nowrap;
+        }
+
+        .actions-btn-group a {
+            color: #212529;
+        }
+
+        .create-new-btn {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .btn-create-new {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-create-new:hover {
+            background-color: #218838;
+        }
+
+        .btn-show, .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+            margin-right: 5px; /* Ajout d'un espace entre les boutons Show et Edit */
+        }
+
+        .btn-show:hover, .btn-edit:hover {
+            background-color: #d39e00;
+        }
+
+        .table-container tbody tr td {
+            border: none;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Transaction index</h1>
+    <div class="container table-container">
+        <h1 class="display-4">Transaction Index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Date_transaction</th>
-                <th>cryptomonnaie</th>
-                <th>Quantity</th>
-                <th>Transaction_amount</th>
-                <th>Transaction_type</th>
-                <th>user_transaction_name</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.id }}</td>
-                <td>{{ transaction.dateTransaction ? transaction.dateTransaction|date('Y-m-d H:i:s') : '' }}</td>
-               <td>{{ transaction.crypto ? transaction.crypto.name : 'N/A' }}</td>
-                <td>{{ transaction.quantity }}</td>
-                <td>{{ transaction.transactionAmount }}</td>
-                <td>{{ transaction.transactionType }}</td>
-                 <td>{{ transaction.user.firstName }}</td>
-                <td>
-                    <a href="{{ path('app_transaction_show', {'id': transaction.id}) }}">show</a>
-                    <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-custom">
+                    <tr>
+                        <th>Id</th>
+                        <th>Date Transaction</th>
+                        <th>Cryptomonnaie</th>
+                        <th>Quantity</th>
+                        <th>Transaction Amount</th>
+                        <th>Transaction Type</th>
+                        <th>User Transaction Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.id }}</td>
+                            <td>{{ transaction.dateTransaction ? transaction.dateTransaction|date('Y-m-d H:i:s') : '' }}</td>
+                            <td>{{ transaction.crypto ? transaction.crypto.name : 'N/A' }}</td>
+                            <td>{{ transaction.quantity }}</td>
+                            <td>{{ transaction.transactionAmount }}</td>
+                            <td>{{ transaction.transactionType }}</td>
+                            <td>{{ transaction.user.firstName }}</td>
+                            <td class="actions-btn-group">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-show"><a href="{{ path('app_transaction_show', {'id': transaction.id}) }}" class="text-dark">Show</a></button>
+                                    {# <button type="button" class="btn btn-edit"><a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}" class="text-dark">Edit</a></button> #}
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8">No records found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <a href="{{ path('app_transaction_new') }}">Create new</a>
+        <div class="create-new-btn">
+            <button class="btn btn-create-new"><a href="{{ path('app_transaction_new') }}" class="text-white">Create new</a></button>
+        </div>
+    </div>
 {% endblock %}
