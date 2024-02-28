@@ -42,12 +42,12 @@
     <!-- end loader -->
     <div id="mySidepanel" class="sidepanel">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <a class="active" href=".html">Home</a>
+        <a class="active" href="{{path("app_home")}}">Home</a>
         <a href="#">About</a>
-        <a href="searvices.html">Services</a>
+        <a href="#">Services</a>
         <a href="{{ path("app_transaction_index") }}">Transaction</a>
-        <a href="works.html">Works</a>
-        <a href="contact.html">Contact</a>
+        <a href="#">Works</a>
+        <a href="#">Contact</a>
     </div>
     <header>
         <!-- header inner -->
@@ -266,7 +266,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row d_flex">
+                        <div id="contact" class="row d_flex">
                             <div class="col-md-10 offset-md-1">
                                 <div id="testimo" class="carousel slide our_testimonial" data-ride="carousel">
                              
