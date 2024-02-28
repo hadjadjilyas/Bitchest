@@ -84,9 +84,11 @@
                         {# <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'app_user_index' %}active{% endif %}" href="{{ path('app_user_index') }}">Profile</a>
                         </li> #}
+                        {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'app_user_index' %}active{% endif %}" href="{{  path("app_user_index") }}">Users</a>
                         </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'app_api_crypto' %}active{% endif %}" href="{{ path('app_api_crypto') }}">Cryptocurrency Prices</a>
                         </li>
