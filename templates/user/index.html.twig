@@ -146,9 +146,12 @@
         </div>
 
         {% if is_granted('ROLE_ADMIN') %}
-            <div class="create-new-btn">
-                <button class="btn btn-create-new"><a href="{{ path('app_user_new') }}" class="text-white">Create new</a></button>
-            </div>
+        <div class="create-new-btn" style="text-align: center;">
+           <button class="btn btn-create-new" style="margin: 0 auto; font-size: 1.5em;">
+             <a href="{{ path('app_user_new') }}" class="text-white" style="text-decoration: none;">Create new</a>
+           </button>
+        </div>
+
         {% endif %}
     </div>
 {% endblock %}

@@ -44,72 +44,76 @@ class TransactionController extends AbstractController
         ]);
     }
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, CryptoRepository $cryptoRepository): Response
-    {
-        $transaction = new Transaction();
-        $form = $this->createForm(TransactionType::class, $transaction);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager, CryptoRepository $cryptoRepository): Response
+{
+    $transaction = new Transaction();
+    $form = $this->createForm(TransactionType::class, $transaction);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $transactionType = $transaction->getTransactionType();
-            $user = $transaction->getUser();
+    $error = null; // Variable pour stocker le message d'erreur
 
-            // Check if the user has a wallet
-            if (!$user || !$user->getHasWallet()) {
-                return $this->render('transaction/new.html.twig', [
-                    'transaction' => $transaction,
-                    'form' => $form,
-                    'error' => 'User does not have a wallet.',
-                ]);
-            }
+    if ($form->isSubmitted() && $form->isValid()) {
+        $transactionType = $transaction->getTransactionType();
+        $user = $transaction->getUser();
 
+        if (!$user || !$user->getHasWallet()) {
+            $error = 'User does not have a wallet.';
+        } else {
             $wallet = $user->getHasWallet();
 
             if ($transactionType === 'buy') {
-                // Buy logic
                 if ($transaction->getTransactionAmount() > $wallet->getUsuableBalance()) {
-                    return $this->render('transaction/new.html.twig', [
-                        'transaction' => $transaction,
-                        'form' => $form,
-                        'error' => 'Insufficient funds in the wallet for buy transaction.',
-                    ]);
+                    $error = 'Insufficient funds in the wallet for buy transaction.';
+                } else {
+                    $wallet->setUsuableBalance($wallet->getUsuableBalance() - $transaction->getTransactionAmount());
+                    $wallet->setCryptoBalance($wallet->getCryptoBalance() + $transaction->getTransactionAmount());
+
+                    $crypto = $cryptoRepository->find($transaction->getCrypto());
+                    $user->addOwnedCrypto($crypto);
                 }
-
-                $wallet->setUsuableBalance($wallet->getUsuableBalance() - $transaction->getTransactionAmount());
-                $wallet->setCryptoBalance($wallet->getCryptoBalance() + $transaction->getTransactionAmount());
-
-                // Update the user's ownedCryptos collection
-                $crypto = $cryptoRepository->find($transaction->getCrypto());
-                $user->addOwnedCrypto($crypto);
-
             } elseif ($transactionType === 'sell') {
-                // Sell logic
-                if ($transaction->getTransactionAmount() > $wallet->getCryptoBalance()) {
-                    return $this->render('transaction/new.html.twig', [
-                        'transaction' => $transaction,
-                        'form' => $form,
-                        'error' => 'Insufficient cryptocurrency in the wallet for sell transaction.',
-                    ]);
-                }
-
                 $wallet->setCryptoBalance($wallet->getCryptoBalance() - $transaction->getTransactionAmount());
                 $wallet->setUsuableBalance($wallet->getUsuableBalance() + $transaction->getTransactionAmount());
 
-                // Update the user's ownedCryptos collection
                 $crypto = $cryptoRepository->find($transaction->getCrypto());
-               // $user->removeOwnedCrypto($crypto);
+
+                if (!$this->isSellPossible($user, $crypto, $transaction->getQuantity())) {
+                    $error = 'Cannot sell. Quantity is insufficient.';
+                }
             }
 
-            $entityManager->persist($transaction);
-            $entityManager->flush();
+            if (!$error) {
+                $entityManager->persist($transaction);
+                $entityManager->flush();
 
-            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+            }
+        }
+    }
+
+    return $this->render('transaction/new.html.twig', [
+        'transaction' => $transaction,
+        'form' => $form,
+        'error' => $error, // Passer le message d'erreur à la vue
+    ]);
+}
+
+
+    private function isSellPossible($user, $crypto, $sellQuantity): bool
+    {
+        $totalQuantity = 0;
+
+        foreach ($crypto->getTransactions() as $transaction) {
+            if ($transaction->getUser() === $user) {
+                if ($transaction->getTransactionType() === 'buy') {
+                    $totalQuantity += $transaction->getQuantity();
+                } elseif ($transaction->getTransactionType() === 'sell') {
+                    $totalQuantity -= $transaction->getQuantity();
+                }
+            }
         }
 
-        return $this->render('transaction/new.html.twig', [
-            'transaction' => $transaction,
-            'form' => $form,
-        ]);
+        return $totalQuantity >= $sellQuantity;
     }
     
     #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
