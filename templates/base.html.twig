@@ -73,6 +73,9 @@
         {% if app.user %}
             <nav class="col-md-2 d-none d-md-block sidebar">
                 <div class="sidebar-sticky">
+                {# 
+                    affichache du solde 
+                 #}
                    {% if app.user and app.user.haswallet and app.user.haswallet.usuableBalance is defined %}
                         <p>
                             My Solde: {{ app.user.haswallet.usuableBalance }} €
