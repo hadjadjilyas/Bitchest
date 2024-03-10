@@ -5,61 +5,63 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/materia/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+   <style>
+    body {
+        background-color: #f8f9fa;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0; 
+    }
 
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 25%;
-        }
+    .login-container {
+        width: 100%;
+        max-width: 400px;
+        margin: auto; 
+    }
 
-        .card {
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        .card-header {
-            background-color: #1e88e5;
-            color: #fff;
-            font-weight: bold;
-            text-align: center;
-            padding: 15px;
-        }
+    .card-header {
+        background-color: #1e88e5;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        padding: 15px;
+    }
 
-        .card-body {
-            text-align: center;
-            padding: 20px;
-        }
+    .card-body {
+        text-align: center;
+        padding: 20px;
+    }
 
-        .form-label {
-            font-weight: bold;
-            margin-top: 10px;
-        }
+    .form-label {
+        font-weight: bold;
+        margin-top: 10px;
+    }
 
-        .btn-primary {
-            background-color: #1e88e5;
-            border: none;
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            font-weight: bold;
-        }
+    .btn-primary {
+        background-color: #1e88e5;
+        border: none;
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        font-weight: bold;
+    }
 
-        .btn-primary:hover {
-            background-color: #0f4aa4;
-        }
-    </style>
+    .btn-primary:hover {
+        background-color: #0f4aa4;
+    }
+</style>
+
 {% endblock %}
 
 {% block body %}
-    <div class="login-container my-auto">
+    <div class="login-container container">
         <div class="card">
             <div class="card-header">
                 <h1>Bitchest</h1>
